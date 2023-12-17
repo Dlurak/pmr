@@ -4,7 +4,24 @@ import os
 import is_manager
 import maps
 
+enum PackageManagers {
+	npm
+	yarn
+	pnpm
+	bun
+}
+
+struct PackageManager {
+	manager PackageManagers
+}
+
 fn main() {
+	manager := get_package_manager()
+
+	println(manager)
+}
+
+fn get_package_manager() PackageManager {
 	cwd := os.getwd()
 	files := os.ls(cwd) or {
 		eprintln('Permissions denied to read directory')
@@ -31,6 +48,15 @@ fn main() {
 		exit(1)
 	}
 
-	manager := applied_managers.keys()[0]
-	println(manager)
+	manager_name := applied_managers.keys()[0]
+
+	manager_type_enum := match manager_name {
+		'npm' { PackageManagers.npm }
+		'yarn' { PackageManagers.yarn }
+		'pnpm' { PackageManagers.pnpm }
+		'bun' { PackageManagers.bun }
+		else { panic('Unexpected') }
+	}
+
+	return PackageManager{manager_type_enum}
 }
