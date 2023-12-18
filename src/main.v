@@ -1,62 +1,31 @@
 module main
 
+import package_manager
+import flag
 import os
-import is_manager
-import maps
-
-enum PackageManagers {
-	npm
-	yarn
-	pnpm
-	bun
-}
-
-struct PackageManager {
-	manager PackageManagers
-}
 
 fn main() {
-	manager := get_package_manager()
+	mut fp := flag.new_flag_parser(os.args)
+	fp.application('pmr')
+	fp.version('v0.0.1')
+	fp.description('PMR - Your unified package manager solution')
+	fp.skip_executable()
 
-	println(manager)
-}
+	default_manager_name := package_manager.get_manager_name() or { 'default' }
 
-fn get_package_manager() PackageManager {
-	cwd := os.getwd()
-	files := os.ls(cwd) or {
-		eprintln('Permissions denied to read directory')
-		exit(1)
+	manager_name := fp.string('package-manager', 0, default_manager_name, 'Specify a package manager to use, defaults to the currently used one.')
+
+	help := fp.bool('help', `h`, false, 'Show the help')
+	show_current_manager := fp.bool('show-current', 0, false, "See which package manager is beeing used, if you don'nt specify one it will be the detected one")
+
+	if help {
+		println(fp.usage())
+		exit(0)
 	}
 
-	managers := {
-		'npm':  is_manager.is_npm(files)
-		'yarn': is_manager.is_yarn(files)
-		'pnpm': is_manager.is_pnpm(files)
-		'bun':  is_manager.is_bun(files)
+	manager := package_manager.PackageManager.new(manager_name)
+
+	if show_current_manager {
+		println(manager.str())
 	}
-
-	applied_managers := maps.filter(managers, fn (k string, v bool) bool {
-		return v
-	})
-	applied_managers_amount := applied_managers.len
-
-	if applied_managers_amount < 1 {
-		eprintln('PMR supports npm, yarn, pnpm and bun, but no package manager has been detected.')
-		exit(1)
-	} else if applied_managers_amount > 1 {
-		eprintln('PMR supports npm, yarn, pnpm and bun, but multiple of these have been detected.')
-		exit(1)
-	}
-
-	manager_name := applied_managers.keys()[0]
-
-	manager_type_enum := match manager_name {
-		'npm' { PackageManagers.npm }
-		'yarn' { PackageManagers.yarn }
-		'pnpm' { PackageManagers.pnpm }
-		'bun' { PackageManagers.bun }
-		else { panic('Unexpected') }
-	}
-
-	return PackageManager{manager_type_enum}
 }
