@@ -15,12 +15,17 @@ fn main() {
 				name: 'show-current'
 				description: 'Output the currently active package manager'
 				execute: fn (cmd cli.Command) ! {
-					manager := cmd.flags.get_string('package-manager') or {
-						eprintln('Something went wrong')
-						exit(1)
-					}
-					println(manager)
+					print(get_manager_name(cmd))
 					return
+				}
+			},
+			cli.Command{
+				name: 'add',
+				description: 'Add a new package.',
+				required_args: 1,
+				execute: fn (cmd cli.Command) ! {
+					pm := package_manager.PackageManager.new(get_manager_name(cmd))
+					pm.add(cmd.args)
 				}
 			},
 		]
@@ -38,4 +43,11 @@ fn main() {
 
 	app.setup()
 	app.parse(os.args)
+}
+
+fn get_manager_name(cmd cli.Command) string {
+	return cmd.flags.get_string('package-manager') or {
+		eprintln('Something went wrong')
+		panic('Something went wrong')
+	}
 }

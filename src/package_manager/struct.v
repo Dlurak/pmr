@@ -1,6 +1,7 @@
 module package_manager
 
 import os
+import arrays
 
 pub struct PackageManager {
 	manager      PackageManagers
@@ -24,15 +25,13 @@ fn (pm PackageManager) execute(args []string) {
 	os.execvp(pm.base_command, args) or { eprintln('Could not execute command') }
 }
 
-// add Add/install a new package.
-// This does not work yet!
 pub fn (pm PackageManager) add(args []string) {
-	serialized_args := match pm.manager {
-		.npm { ['install'] }
-		.yarn { ['install'] }
-		.pnpm { ['install'] }
-		.bun { ['install'] }
+	serialized_arg := match pm.manager {
+		.npm { 'install' }
+		.yarn { 'add' }
+		.pnpm { 'add' }
+		.bun { 'add' }
 	}
 
-	pm.execute(serialized_args)
+	pm.execute(arrays.append([serialized_arg], args))
 }
