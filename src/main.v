@@ -1,6 +1,7 @@
 module main
 
 import package_manager
+import package_manager.parts
 import os
 import cli
 
@@ -20,12 +21,23 @@ fn main() {
 				}
 			},
 			cli.Command{
-				name: 'add',
-				description: 'Add a new package.',
-				required_args: 1,
+				name: 'add'
+				description: 'Add a new package.'
+				required_args: 1
+				flags: [
+					cli.Flag{
+						flag: .bool
+						name: 'global'
+						abbrev: 'g'
+						default_value: ['false']
+					},
+				]
 				execute: fn (cmd cli.Command) ! {
 					pm := package_manager.PackageManager.new(get_manager_name(cmd))
-					pm.add(cmd.args)
+					pm.add(parts.AddArgs{
+						package_name: 'open-holiday-js'
+						global: cmd.flags.get_bool('global')!
+					})
 				}
 			},
 		]

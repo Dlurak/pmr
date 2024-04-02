@@ -1,10 +1,11 @@
 module package_manager
 
 import os
-import arrays
+import general
+import package_manager.parts
 
 pub struct PackageManager {
-	manager      PackageManagers
+	manager      general.PackageManagers
 	base_command string
 }
 
@@ -25,13 +26,7 @@ fn (pm PackageManager) execute(args []string) {
 	os.execvp(pm.base_command, args) or { eprintln('Could not execute command') }
 }
 
-pub fn (pm PackageManager) add(args []string) {
-	serialized_arg := match pm.manager {
-		.npm { 'install' }
-		.yarn { 'add' }
-		.pnpm { 'add' }
-		.bun { 'add' }
-	}
-
-	pm.execute(arrays.append([serialized_arg], args))
+pub fn (pm PackageManager) add(args parts.AddArgs) {
+	argument_list := parts.Add.new(pm.manager, args.package_name).list()
+	pm.execute(argument_list)
 }

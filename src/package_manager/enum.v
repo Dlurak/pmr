@@ -1,15 +1,9 @@
 module package_manager
 
 import is_manager
+import general
 import os
 import maps
-
-pub enum PackageManagers {
-	npm
-	yarn
-	pnpm
-	bun
-}
 
 // get_manager_name Get the name of the package manager as a string.
 // To do this the files in the cwd are beeing used.
@@ -43,7 +37,7 @@ pub fn get_manager_name() !string {
 	return applied_managers.keys()[0]
 }
 
-pub fn get_manager_enum(manager_name string) !PackageManagers {
+pub fn get_manager_enum(manager_name string) !general.PackageManagers {
 	return match manager_name {
 		'npm' { .npm }
 		'yarn' { .yarn }
