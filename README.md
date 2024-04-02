@@ -11,6 +11,6 @@ PMR aims to solve this problem.
 
 ---
 
-Licenced under GPL-3
+Licensed under GPL-3
 
 Please note that this project is still very early and not production ready yet!
