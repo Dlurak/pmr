@@ -35,8 +35,32 @@ fn main() {
 				execute: fn (cmd cli.Command) ! {
 					pm := package_manager.PackageManager.new(get_manager_name(cmd))
 					pm.add(parts.AddArgs{
-						package_name: 'open-holiday-js'
+						package_name: cmd.args[0]
 						global: cmd.flags.get_bool('global')!
+					})
+				}
+			},
+			cli.Command{
+				name: 'install'
+				description: 'Install dependencies'
+				required_args: 0
+				flags: [
+					cli.Flag{
+						flag: .bool
+						name: 'lock'
+						default_value: ['false']
+					},
+					cli.Flag{
+						flag: .bool
+						name: 'prod'
+						default_value: ['false']
+					},
+				]
+				execute: fn (cmd cli.Command) ! {
+					pm := package_manager.PackageManager.new(get_manager_name(cmd))
+					pm.install(parts.InstallArgs{
+						frozen_lock: cmd.flags.get_bool('lock')!
+						production: cmd.flags.get_bool('prod')!
 					})
 				}
 			},

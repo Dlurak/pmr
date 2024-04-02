@@ -1,6 +1,7 @@
 module package_manager
 
 import os
+import arrays
 import general
 import package_manager.parts
 
@@ -23,10 +24,21 @@ pub fn (pm PackageManager) str() string {
 }
 
 fn (pm PackageManager) execute(args []string) {
-	os.execvp(pm.base_command, args) or { eprintln('Could not execute command') }
+	all_items := arrays.append([pm.base_command], args.filter(it != ''))
+	command_string := arrays.join_to_string(all_items, ' ', fn (s string) string {
+		return s
+	})
+	println('$ ${command_string}')
+
+	os.execvp(pm.base_command, args.filter(it != '')) or { eprintln('Could not execute command') }
 }
 
 pub fn (pm PackageManager) add(args parts.AddArgs) {
-	argument_list := parts.Add.new(pm.manager, args.package_name).list()
+	argument_list := parts.Add.new(pm.manager, args.package_name).list(args)
+	pm.execute(argument_list)
+}
+
+pub fn (pm PackageManager) install(args parts.InstallArgs) {
+	argument_list := parts.Install.new(pm.manager).list(args)
 	pm.execute(argument_list)
 }

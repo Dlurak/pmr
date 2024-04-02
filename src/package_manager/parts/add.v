@@ -49,7 +49,7 @@ pub fn Add.new(manager general.PackageManagers, name string) Add {
 		}
 		.bun {
 			Add{
-				command: 'install'
+				command: 'add'
 				global_flag: '-g'
 				order: [.command, .global, .name]
 				package_name: name
@@ -58,12 +58,18 @@ pub fn Add.new(manager general.PackageManagers, name string) Add {
 	}
 }
 
-pub fn (add Add) list() []string {
-	return add.order.map(fn [add] (part AddParts) string {
+pub fn (add Add) list(args AddArgs) []string {
+	return add.order.map(fn [add, args] (part AddParts) string {
 		return match part {
-			.command { add.command }
-			.global { add.global_flag }
-			.name { add.package_name }
+			.command {
+				add.command
+			}
+			.global {
+				if args.global { add.global_flag } else { '' }
+			}
+			.name {
+				add.package_name
+			}
 		}
 	})
 }
