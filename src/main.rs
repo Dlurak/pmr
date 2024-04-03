@@ -27,7 +27,9 @@ struct Args {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
+    /// Show which package manager has beek detected
     ShowCurrent,
+    /// Add a new package
     Add {
         #[clap(help = "The name of the package to install")]
         package_name: String,
@@ -40,6 +42,7 @@ enum Commands {
         )]
         global: bool,
     },
+    /// Install dependencies
     Install,
 }
 
