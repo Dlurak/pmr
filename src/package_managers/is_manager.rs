@@ -9,7 +9,7 @@ fn read_package_json_pmr() -> Option<PackageManager> {
     let mut file = File::open("package.json").ok()?;
 
     let mut contents = String::new();
-    if let Err(_) = file.read_to_string(&mut contents) {
+    if file.read_to_string(&mut contents).is_err() {
         return None;
     }
 
@@ -29,7 +29,7 @@ pub fn get_package_manager() -> Option<PackageManager> {
 
     let files = read_dir(current_dir().ok()?).ok()?;
     let lockfiles = files
-        .map(|entry| {
+        .filter_map(|entry| {
             let entry = entry.ok()?;
 
             if !entry.file_type().ok()?.is_file() {
@@ -47,7 +47,6 @@ pub fn get_package_manager() -> Option<PackageManager> {
                 _ => None,
             }
         })
-        .filter_map(|f| f)
         .collect::<Vec<_>>();
 
     let lockfiles_len = lockfiles.len();

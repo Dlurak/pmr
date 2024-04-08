@@ -16,9 +16,8 @@ impl Install {
         self.order
             .iter()
             .map(|part| match part {
-                InstallPart::Command => Some(self.command.clone()),
+                InstallPart::Command => self.command.clone(),
             })
-            .filter_map(|s| s)
             .collect()
     }
 }

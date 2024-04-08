@@ -21,7 +21,7 @@ impl Add {
     fn list(&self, args: &AddArgs) -> Vec<String> {
         self.order
             .iter()
-            .map(|part| match part {
+            .filter_map(|part| match part {
                 AddPart::Command => Some(self.command.clone()),
                 AddPart::GlobalFlag => {
                     if args.global {
@@ -30,9 +30,8 @@ impl Add {
                         None
                     }
                 }
-                AddPart::PackageName => Some(format!("{}", args.package_name)),
+                AddPart::PackageName => Some(args.package_name.to_string()),
             })
-            .filter_map(|s| s)
             .collect()
     }
 }

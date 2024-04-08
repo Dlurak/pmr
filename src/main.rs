@@ -79,7 +79,7 @@ fn main() {
     let argument_list = match cli.cmd {
         Commands::ShowCurrent => {
             println!("{}", package_manager);
-            return ();
+            return;
         }
         Commands::Add {
             package_name,
@@ -93,11 +93,8 @@ fn main() {
     };
 
     let status = package_manager.execute(&argument_list);
-    match status {
-        Err(ExecError::NotStarted) => {
-            eprintln!("Could not start process");
-            process::exit(1)
-        }
-        _ => (),
-    };
+    if let Err(ExecError::NotStarted) = status {
+        eprintln!("Could not start process");
+        process::exit(1)
+    }
 }
