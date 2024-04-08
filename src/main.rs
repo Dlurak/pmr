@@ -7,6 +7,7 @@ use package_managers::is_manager::get_package_manager;
 
 use package_managers::exec::add::AddArgs;
 use package_managers::exec::install::InstallArgs;
+use package_managers::exec::remove::RemoveArgs;
 
 use std::process;
 
@@ -28,8 +29,14 @@ struct Args {
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Show which package manager has beek detected
+    #[clap(
+        aliases = &["show", "sc"]
+    )]
     ShowCurrent,
     /// Add a new package
+    #[clap(
+        aliases = &["a", "ad"]
+    )]
     Add {
         #[clap(help = "The name of the package to install")]
         package_name: String,
@@ -43,7 +50,19 @@ enum Commands {
         global: bool,
     },
     /// Install dependencies
+    #[clap(
+        aliases = &["i", "in", "isntal"]
+    )]
     Install,
+
+    /// Remove a package
+    #[clap(
+        aliases = &["rm", "uninstall", "r", "un"]
+    )]
+    Remove {
+        #[clap(help = "The name of the package to remove")]
+        package_name: String,
+    },
 }
 
 fn main() {
@@ -70,6 +89,7 @@ fn main() {
             global,
         }),
         Commands::Install => package_manager.install(InstallArgs {}),
+        Commands::Remove { package_name } => package_manager.remove(RemoveArgs { package_name }),
     };
 
     let status = package_manager.execute(&argument_list);
